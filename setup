@@ -17,7 +17,7 @@ mkdir -p /var/lib/webgen/HTML
 chown -R webgen /var/lib/webgen
 
 # Clone the repo containing the generate_index script
-git clone https://gitlab.com/cit2420/2420-as3-starting-files.git /var/lib/webgen/bin
+git clone https://git.sr.ht/~nathan_climbs/2420-as2-start /var/lib/webgen/bin
 # You must clone this repo to get the generate_index script
 
 # Create a service file that will run generate_index script
