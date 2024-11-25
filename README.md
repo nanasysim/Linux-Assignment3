@@ -153,3 +153,6 @@ sudo ufw status
 ```
 
 ### Task 5: Droplet's IP and webserver 
+Screenshot: 
+
+Droplet IP:
