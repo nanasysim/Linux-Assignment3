@@ -13,6 +13,12 @@ This will install the nginx package.
 ```sudo pacman -S nvim```
 This will install the nvim package.
 
+Then run the script by running the following command:
+
+```chmod +x setup.sh```
+
+```sudo ./setup.sh```
+
 ## Tasks
 ### Task 1: Create a System User
 ```
