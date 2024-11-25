@@ -16,12 +16,16 @@ mkdir -p /var/lib/webgen/HTML
 # Ensure user webgen has ownership of the directories
 chown -R webgen /var/lib/webgen
 
-# Create systemd service
-cat <<EOL | sudo tee /etc/systemd/system/generate-index.service
+# Clone the repo containing the generate_index script
+git clone https://gitlab.com/cit2420/2420-as3-starting-files.git /var/lib/webgen/bin
+# You must clone this repo to get the generate_index script
+
+# Create a service file that will run generate_index script
+cat <<EOL > /etc/systemd/system/generate-index.service
 [Unit]
 Description=Generate index.html
-After=network-online.target
-Wants=network-online.target
+After=network-online.target  # Ensure the service runs after the network is online
+Wants=network-online.target  # Optional dependency on network-online.target
 
 [Service]
 User=webgen
@@ -32,13 +36,13 @@ ExecStart=/var/lib/webgen/bin/generate_index
 WantedBy=multi-user.target
 EOL
 
-# Create systemd timer
-cat <<EOL | sudo tee /etc/systemd/system/generate-index.timer
+# Create generate-index.timer file that will run the service everyday at 05:00
+cat <<EOL > /etc/systemd/system/generate-index.timer
 [Unit]
-Description=Run generate-index.service daily at 05:00
+Description=Run generate-index.service everyday at 05:00
 
 [Timer]
-OnCalendar=*-*-* 05:00:00
+OnCalendar=*-*-* 05:00:00  # Run the service everyday at 05:00
 Persistent=true
 
 [Install]
