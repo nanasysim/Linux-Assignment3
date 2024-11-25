@@ -13,6 +13,12 @@ This will install the nginx package.
 ```sudo pacman -S nvim```
 This will install the nvim package.
 
+```sudo pacman -S git```
+This will install the git package.
+
+```sudo pacman -S ufw```   
+This will install the ufw package.
+
 Then run the script by running the following command:
 
 ```chmod +x setup.sh```
