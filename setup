@@ -62,22 +62,3 @@ server {
     }
 }
 EOL
-
-<<<<<<< HEAD
-sudo ln -s /etc/nginx/sites-available/webgen /etc/nginx/sites-enabled/
-sudo nginx -t
-sudo systemctl restart nginx
-
-# Install and configure UFW
-sudo pacman -S ufw
-sudo ufw allow ssh
-sudo ufw allow http
-sudo ufw limit ssh
-sudo ufw enable
-
-# Check UFW status
-sudo ufw status
-
-echo "Setup completed successfully."
-=======
->>>>>>> e458d18393cb66ebe4d098db1f3df54af28bdc3c
