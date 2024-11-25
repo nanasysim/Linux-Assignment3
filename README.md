@@ -139,5 +139,17 @@ server {
 ***Check the status of Nginx to ensure it is running:***
 ```sudo systemctl status nginx```
 ### Task 4: Set up a firewall
+Make sure you configure the firewall to allow SSH and HTTP traffic. You can use the following commands to set up the firewall:
+```
+sudo ufw allow ssh
+sudo ufw allow http
+sudo ufw limit ssh
+sudo ufw enable
+```
+
+***To check the status of the firewall, you can use the following command:***
+```
+sudo ufw status
+```
 
 ### Task 5: Droplet's IP and webserver 
