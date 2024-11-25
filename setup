@@ -10,9 +10,10 @@ fi
 useradd -r -m -d /var/lib/webgen -s /usr/bin/nologin webgen 
 
 # Create /bin and /HTML directories
-mkdir -p /var/lib/webgen/bin /var/lib/webgen/HTML
+mkdir -p /var/lib/webgen/bin 
+mkdir -p /var/lib/webgen/HTML
 
-# Ensure webgen has ownership of the directories
+# Ensure user webgen has ownership of the directories
 chown -R webgen /var/lib/webgen
 
 # Create systemd service
@@ -44,14 +45,6 @@ Persistent=true
 WantedBy=timers.target
 EOL
 
-# Enable and start the timer
-sudo systemctl enable generate-index.timer
-sudo systemctl start generate-index.timer
-
-# Install and configure Nginx
-sudo pacman -S nginx
-sudo sed -i 's/^user .*/user webgen;/' /etc/nginx/nginx.conf
-
 cat <<EOL | sudo tee /etc/nginx/sites-available/webgen
 server {
     listen 80;
@@ -66,18 +59,3 @@ server {
 }
 EOL
 
-sudo ln -s /etc/nginx/sites-available/webgen /etc/nginx/sites-enabled/
-sudo nginx -t
-sudo systemctl restart nginx
-
-# Install and configure UFW
-sudo pacman -S ufw
-sudo ufw allow ssh
-sudo ufw allow http
-sudo ufw limit ssh
-sudo ufw enable
-
-# Check UFW status
-sudo ufw status
-
-echo "Setup completed successfully."

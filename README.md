@@ -14,6 +14,25 @@ This will install the nvim package.
 
 ## Tasks
 ### Task 1: Create a System User
+```
+#!/bin/bash
+
+# To check if user is running on sudo
+if [[ ! $EUID == 0 ]]; then
+    echo "$0 is not running as root. Please use sudo."
+    exit 1
+fi
+
+# Create user webgen with home directory at /var/lib/webgen
+useradd -r -m -d /var/lib/webgen -s /usr/bin/nologin webgen 
+
+# Create /bin and /HTML directories
+mkdir -p /var/lib/webgen/bin 
+mkdir -p /var/lib/webgen/HTML
+
+# Ensure user webgen has ownership of the directories
+chown -R webgen /var/lib/webgen
+```
 
 ### Task 2: Create a Service file that runs generate_index script
 
