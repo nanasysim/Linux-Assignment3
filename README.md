@@ -75,7 +75,8 @@ Persistent=true
 WantedBy=timers.target
 EOL
 ```
-Verification
+**Verification**
+
 To verify that the timer is active and that the service runs successfully, you can use the following commands:
 
 1. Check the status of the service: 
