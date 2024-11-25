@@ -1,26 +1,31 @@
 #!/bin/bash
 
-# Ensure the script is run as root
-if [[ $EUID -ne 0 ]]; then
-    echo "This script must be run as root. Please use sudo."
+# To check if user is running on sudo
+if [[ ! $EUID == 0 ]]; then
+    echo "$0 is not running as root. Please use sudo."
     exit 1
 fi
 
-# Create system user
-sudo useradd -r -d /var/lib/webgen -s /usr/sbin/nologin webgen
-sudo mkdir -p /var/lib/webgen/{bin,HTML}
-sudo chown -R webgen:webgen /var/lib/webgen
+# Create user webgen with home directory at /var/lib/webgen
+useradd -r -m -d /var/lib/webgen -s /usr/bin/nologin webgen 
 
-# Clone generate_index script
-sudo git clone <repository_url> /var/lib/webgen/bin
-sudo chown -R webgen:webgen /var/lib/webgen/bin
+# Create /bin and /HTML directories
+mkdir -p /var/lib/webgen/bin 
+mkdir -p /var/lib/webgen/HTML
 
-# Create systemd service
-cat <<EOL | sudo tee /etc/systemd/system/generate-index.service
+# Ensure user webgen has ownership of the directories
+chown -R webgen /var/lib/webgen
+
+# Clone the repo containing the generate_index script
+git clone https://gitlab.com/cit2420/2420-as3-starting-files.git /var/lib/webgen/bin
+# You must clone this repo to get the generate_index script
+
+# Create a service file that will run generate_index script
+cat <<EOL > /etc/systemd/system/generate-index.service
 [Unit]
 Description=Generate index.html
-After=network-online.target
-Wants=network-online.target
+After=network-online.target  # Ensure the service runs after the network is online
+Wants=network-online.target  # Optional dependency on network-online.target
 
 [Service]
 User=webgen
@@ -31,26 +36,18 @@ ExecStart=/var/lib/webgen/bin/generate_index
 WantedBy=multi-user.target
 EOL
 
-# Create systemd timer
-cat <<EOL | sudo tee /etc/systemd/system/generate-index.timer
+# Create generate-index.timer file that will run the service everyday at 05:00
+cat <<EOL > /etc/systemd/system/generate-index.timer
 [Unit]
-Description=Run generate-index.service daily at 05:00
+Description=Run generate-index.service everyday at 05:00
 
 [Timer]
-OnCalendar=*-*-* 05:00:00
+OnCalendar=*-*-* 05:00:00  # Run the service everyday at 05:00
 Persistent=true
 
 [Install]
 WantedBy=timers.target
 EOL
-
-# Enable and start the timer
-sudo systemctl enable generate-index.timer
-sudo systemctl start generate-index.timer
-
-# Install and configure Nginx
-sudo pacman -S nginx
-sudo sed -i 's/^user .*/user webgen;/' /etc/nginx/nginx.conf
 
 cat <<EOL | sudo tee /etc/nginx/sites-available/webgen
 server {
@@ -66,6 +63,7 @@ server {
 }
 EOL
 
+<<<<<<< HEAD
 sudo ln -s /etc/nginx/sites-available/webgen /etc/nginx/sites-enabled/
 sudo nginx -t
 sudo systemctl restart nginx
@@ -81,3 +79,5 @@ sudo ufw enable
 sudo ufw status
 
 echo "Setup completed successfully."
+=======
+>>>>>>> e458d18393cb66ebe4d098db1f3df54af28bdc3c
