@@ -1,0 +1,83 @@
+#!/bin/bash
+
+# Ensure the script is run as root
+if [[ $EUID -ne 0 ]]; then
+    echo "This script must be run as root. Please use sudo."
+    exit 1
+fi
+
+# Create system user
+sudo useradd -r -d /var/lib/webgen -s /usr/sbin/nologin webgen
+sudo mkdir -p /var/lib/webgen/{bin,HTML}
+sudo chown -R webgen:webgen /var/lib/webgen
+
+# Clone generate_index script
+sudo git clone <repository_url> /var/lib/webgen/bin
+sudo chown -R webgen:webgen /var/lib/webgen/bin
+
+# Create systemd service
+cat <<EOL | sudo tee /etc/systemd/system/generate-index.service
+[Unit]
+Description=Generate index.html
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=webgen
+Group=webgen
+ExecStart=/var/lib/webgen/bin/generate_index
+
+[Install]
+WantedBy=multi-user.target
+EOL
+
+# Create systemd timer
+cat <<EOL | sudo tee /etc/systemd/system/generate-index.timer
+[Unit]
+Description=Run generate-index.service daily at 05:00
+
+[Timer]
+OnCalendar=*-*-* 05:00:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target
+EOL
+
+# Enable and start the timer
+sudo systemctl enable generate-index.timer
+sudo systemctl start generate-index.timer
+
+# Install and configure Nginx
+sudo pacman -S nginx
+sudo sed -i 's/^user .*/user webgen;/' /etc/nginx/nginx.conf
+
+cat <<EOL | sudo tee /etc/nginx/sites-available/webgen
+server {
+    listen 80;
+    server_name _;
+
+    root /var/lib/webgen/HTML;
+    index index.html;
+
+    location / {
+        try_files \$uri \$uri/ =404;
+    }
+}
+EOL
+
+sudo ln -s /etc/nginx/sites-available/webgen /etc/nginx/sites-enabled/
+sudo nginx -t
+sudo systemctl restart nginx
+
+# Install and configure UFW
+sudo pacman -S ufw
+sudo ufw allow ssh
+sudo ufw allow http
+sudo ufw limit ssh
+sudo ufw enable
+
+# Check UFW status
+sudo ufw status
+
+echo "Setup completed successfully."
