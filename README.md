@@ -108,7 +108,36 @@ journalctl -u generate-index.service
 
 These commands will help you ensure that the timer is set up correctly and that the service is running as expected.
 ### Task 3: Modify the main nginx.conf 
+1. Open the main `nginx.conf` file for editing
+2. Find the user directive and change it to `webgen`
+```
+user webgen;
+```
+3. Save and close the file
+4. Create a new server block file
+```
+sudo nvim /etc/nginx/conf.d/webgen.conf
+```
+5. Add the following configuration to the `webgen.conf` file
+```
+server {
+    listen 80;
+    server_name _;
 
+    root /var/lib/webgen/HTML;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+}
+```
+***To test your ngnix configuration, you can run the following command:***
+```sudo nginx -t```
+***Reload Nginx to apply the changes:***
+```sudo systemctl reload nginx```
+***Check the status of Nginx to ensure it is running:***
+```sudo systemctl status nginx```
 ### Task 4: Set up a firewall
 
 ### Task 5: Droplet's IP and webserver 
