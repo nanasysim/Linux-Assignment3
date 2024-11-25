@@ -154,5 +154,6 @@ sudo ufw status
 
 ### Task 5: Droplet's IP and webserver 
 Screenshot: 
+![server](server.png)
 
-Droplet IP:
+Droplet IP: 143.110.239.245
