@@ -3,6 +3,7 @@ Assignment 3 for ACIT 2420
 
 ## Setup Instructions
 Before you start the following tasks, make sure you do the following:
+
 ```sudo pacman -Syu```
 This will update your system and make sure you have the latest packages.
 
